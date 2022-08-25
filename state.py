@@ -13,6 +13,7 @@ class State():
         for screen in self.screens:
             if screen['name']==options.get('screen_name'):
                 screen_to_show = screen 
+                screen['screen'].hide()
             else:
                 screen['screen'].hide()
         if screen_to_show is not None:
