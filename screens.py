@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from tkinter import *
 from functools import partial
 import os
-from typing import overload 
 import data_manager
+from renderer import Renderer
 
 class Screen(ABC):
 
@@ -147,8 +147,8 @@ class ViewScreen(Screen):
         self.text = Text(self.root, font='comicsansms 15', padx=50, pady=20)
         try:
             self.text_string = self.get_article_content(options.get('article_name'))
-            self.text.insert(END, self.text_string)
-            # Parser(self, self.text, self.text_string, self.state).parse()
+            # self.text.insert(END, self.text_string)
+            Renderer(self.text, self.text_string, self.state).render()
             self.text.config(state='disabled')
 
             self.frame = Frame(self.root, bg='white', padx=50, pady=10, borderwidth=1, relief=GROOVE)

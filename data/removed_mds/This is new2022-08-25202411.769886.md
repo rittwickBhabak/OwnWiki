@@ -1,0 +1,1 @@
+Everything is new if we can see it from another point of view
