@@ -17,7 +17,7 @@ def get_articles_list():
     path = os.path.join(BASE_DIR, 'data', 'mds')
     return os.listdir(path)
 
-def get(file_name, file_content):
+def get(file_name):
     path = os.path.join(BASE_DIR, 'data', 'mds', file_name+'.md')
     with open(path, 'r') as f:
         return f.read()

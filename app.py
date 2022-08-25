@@ -1,6 +1,6 @@
 import os
 from state import State
-from screens import CreateScreen, EditScreen, ListScreen, ViewScreen
+from screens import CreateScreen, EditScreen, ListScreen, ViewScreen, CreateViewScreen, EditViewScreen
 from tkinter import * 
 
 if __name__=='__main__':
@@ -8,7 +8,7 @@ if __name__=='__main__':
 
     root = Tk()
     root.geometry('1000x700')
-    root.resizable(False, False)
+    # root.resizable(False, False)
 
     state = State(base_dir=BASE_DIR)
     list_screen = {
@@ -16,7 +16,7 @@ if __name__=='__main__':
         'name': 'list_screen'
     }
     create_screen = {
-        'screen': CreateScreen(root, state, 'Create New Article', '', False),
+        'screen': CreateViewScreen(root, state, 'Create New Article', '', False),
         'name': 'create_screen'
     }
     view_screen = {
@@ -24,7 +24,7 @@ if __name__=='__main__':
         'name': 'view_screen'
     }
     edit_screen = {
-        'screen': EditScreen(root, state, 'Edit Article', '', False),
+        'screen': EditViewScreen(root, state, 'Edit Article', '', False),
         'name': 'edit_screen'
     }
     state.add_screen(list_screen)

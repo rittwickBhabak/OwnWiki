@@ -122,7 +122,7 @@ class CreateScreen(Screen):
                 return
         return True
        
-    def __save(self, event):
+    def save(self, event):
         file_name = self.title_value.get()
         file_content = self.text.get("1.0", "end-1c")
         is_ok = self.check_data_before_save(file_name, file_content, action='create')
@@ -153,7 +153,7 @@ class CreateScreen(Screen):
         self.home_button.bind('<Button-1>', partial(self.state.show, {'screen_name': 'list_screen'}))
 
         self.save_button = Button(self.frame, text='Save', padx=10, pady=5, font='comicsansms 10')
-        self.save_button.bind('<Button-1>', self.__save)
+        self.save_button.bind('<Button-1>', self.save)
 
         self.add_element(element=self.frame, pack_options={'fill':BOTH})
         self.add_element(element=self.title_label, pack_options={})
@@ -218,7 +218,7 @@ class EditScreen(CreateScreen):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def __save(self, event):
+    def save(self, event):
         file_name = self.title_value.get()
         file_content = self.text.get("1.0", "end-1c")
         is_ok = self.check_data_before_save(file_name, file_content, action='edit')
@@ -236,7 +236,119 @@ class EditScreen(CreateScreen):
         super().make_screen_elements(options=options)
         self.set_heading(f'Edit Article - {options.get("article_name")}')
         self.set_title(f'Edit Article - {options.get("article_name")}')
-        self.save_button.bind('<Button-1>', self.__save)
+        self.save_button.bind('<Button-1>', self.save)
         self.title_entry.config(state='disabled')
         self.text.insert(END, self.get_article_content(options['article_name']))
 
+
+class CreateViewScreen(CreateScreen, ViewScreen):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+    
+    def change_event_handler(self, event=None):
+        self.view_text.config(state='normal')
+        self.view_text.delete("1.0", "end")
+        Renderer(self.view_text, self.edit_text.get("1.0", "end-1c"), self.state).render()
+        self.view_text.config(state='disabled')
+    
+    def make_screen_elements(self, options=None):
+        self.frame = Frame(self.root, padx=50, pady=10, borderwidth=1, relief=GROOVE)
+        self.panes = Frame(self.root, padx=50, pady=10, borderwidth=1, relief=GROOVE)
+
+        self.edit_frame = Frame(self.panes)
+        self.view_frame = Frame(self.panes)
+
+        self.edit_text = Text(self.edit_frame, font='comicsansms 15', padx=50, pady=20)
+        self.text = self.edit_text
+        self.view_text = Text(self.view_frame, font='comicsansms 15', padx=50, pady=20)
+        self.change_event_handler()
+        self.view_text.config(state='disabled')
+
+        self.set_title('Create New Article')
+        self.title_label = Label(self.frame, text='Enter Title: ', font='comicsansms 22 bold', bg='white')
+        self.title_value = StringVar()
+        if options is not None:
+            article_name = options.get('article_name')
+            if article_name is not None:
+                self.title_value.set(options['article_name'])
+
+        self.title_entry = Entry(self.frame, textvariable=self.title_value, font='comicsansms 20', borderwidth=2, relief=GROOVE)
+
+        self.home_button = Button(self.frame, text='Home', padx=10, pady=5, font='comicsansms 10')
+        self.home_button.bind('<Button-1>', partial(self.state.show, {'screen_name': 'list_screen'}))
+
+        self.save_button = Button(self.frame, text='Save', padx=10, pady=5, font='comicsansms 10')
+        self.save_button.bind('<Button-1>', self.save)
+
+        self.edit_text.bind("<KeyPress>", self.change_event_handler)
+        self.edit_text.bind("<KeyRelease>", self.change_event_handler)
+
+        self.add_element(element=self.frame, pack_options={'fill':X})
+        self.add_element(element=self.title_label, pack_options={})
+        self.add_element(element=self.title_entry, pack_options={'fill':X, 'pady':10, 'ipadx':10, 'ipady':10})
+        self.add_element(element=self.home_button, pack_options={'side':LEFT})
+        self.add_element(element=self.save_button, pack_options={'side':LEFT})
+
+        self.add_element(element=self.panes, pack_options={'fill':BOTH, 'expand':True})
+        self.add_element(element=self.edit_frame, pack_options={'fill':Y, 'side':LEFT, 'anchor':'nw'})
+        self.add_element(element=self.view_frame, pack_options={'fill':Y, 'side':RIGHT, 'anchor':'ne'})
+        self.add_element(element=self.edit_text, pack_options={'fill':BOTH, 'expand':True})
+        self.add_element(element=self.view_text, pack_options={'fill':BOTH, 'expand':True})
+
+class EditViewScreen(EditScreen, ViewScreen):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+    
+    def change_event_handler(self, event=None):
+        self.view_text.config(state='normal')
+        self.view_text.delete("1.0", "end")
+        Renderer(self.view_text, self.edit_text.get("1.0", "end-1c"), self.state).render()
+        self.view_text.config(state='disabled')
+    
+    def make_screen_elements(self, options=None):
+        self.frame = Frame(self.root, padx=50, pady=10, borderwidth=1, relief=GROOVE)
+        self.panes = Frame(self.root, padx=50, pady=10, borderwidth=1, relief=GROOVE)
+
+        self.edit_frame = Frame(self.panes)
+        self.view_frame = Frame(self.panes)
+
+        self.edit_text = Text(self.edit_frame, font='comicsansms 15', padx=50, pady=20)
+        self.text = self.edit_text
+        self.view_text = Text(self.view_frame, font='comicsansms 15', padx=50, pady=20)
+        self.view_text.config(state='normal')
+        self.view_text.delete("1.0", "end")
+        self.edit_text.insert(END, data_manager.get(options['article_name']))
+        Renderer(self.view_text, data_manager.get(options['article_name']), self.state).render()
+        self.view_text.config(state='disabled')
+        self.view_text.config(state='disabled')
+
+        self.set_title('Create New Article')
+        self.title_label = Label(self.frame, text='Enter Title: ', font='comicsansms 22 bold', bg='white')
+        self.title_value = StringVar()
+        if options is not None:
+            article_name = options.get('article_name')
+            if article_name is not None:
+                self.title_value.set(options['article_name'])
+
+        self.title_entry = Entry(self.frame, textvariable=self.title_value, font='comicsansms 20', borderwidth=2, relief=GROOVE)
+
+        self.home_button = Button(self.frame, text='Home', padx=10, pady=5, font='comicsansms 10')
+        self.home_button.bind('<Button-1>', partial(self.state.show, {'screen_name': 'list_screen'}))
+
+        self.save_button = Button(self.frame, text='Save', padx=10, pady=5, font='comicsansms 10')
+        self.save_button.bind('<Button-1>', self.save)
+
+        self.edit_text.bind("<KeyPress>", self.change_event_handler)
+        self.edit_text.bind("<KeyRelease>", self.change_event_handler)
+
+        self.add_element(element=self.frame, pack_options={'fill':X})
+        self.add_element(element=self.title_label, pack_options={})
+        self.add_element(element=self.title_entry, pack_options={'fill':X, 'pady':10, 'ipadx':10, 'ipady':10})
+        self.add_element(element=self.home_button, pack_options={'side':LEFT})
+        self.add_element(element=self.save_button, pack_options={'side':LEFT})
+
+        self.add_element(element=self.panes, pack_options={'fill':BOTH, 'expand':True})
+        self.add_element(element=self.edit_frame, pack_options={'fill':Y, 'side':LEFT, 'anchor':'nw'})
+        self.add_element(element=self.view_frame, pack_options={'fill':Y, 'side':RIGHT, 'anchor':'ne'})
+        self.add_element(element=self.edit_text, pack_options={'fill':BOTH, 'expand':True})
+        self.add_element(element=self.view_text, pack_options={'fill':BOTH, 'expand':True})
