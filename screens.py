@@ -1,9 +1,13 @@
-from abc import ABC, abstractmethod
-from tkinter import *
-from functools import partial
 import os
+from functools import partial
+from abc import ABC, abstractmethod
+
+from tkinter import *
+from urllib import response
+
 import data_manager
 from renderer import Renderer
+from messages import show_message, askquestion
 
 class Screen(ABC):
 
@@ -38,9 +42,10 @@ class Screen(ABC):
 
     def show(self, options=None):
         self.set_active(True)
-        self.make_screen_elements(options)
-        for element in self.screen_elements:
-            element['element'].pack(**element['pack_options']) 
+        value = self.make_screen_elements(options)
+        if value is None or value==1:
+            for element in self.screen_elements:
+                element['element'].pack(**element['pack_options']) 
 
     @abstractmethod
     def make_screen_elements(self, options=None):
@@ -87,11 +92,43 @@ class CreateScreen(Screen):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    def check_data_before_save(self, file_name, file_content, action):
+        response = data_manager.check_data(file_name, file_content, action)
+        code = response['code']
+        message = response.get('message')
+        # responses can be
+        # 1. file name blank
+        # 2. duplicate file name
+        # 3. file content blank
+        if code==1: # article name blank
+            show_message('Error', message)
+            return
+        elif code==2: # duplicate article name
+            value = askquestion('Warning', message)
+            if value=='yes': # overwrite the existing article
+                data_manager.edit(file_name, file_content)
+                self.state.show({'screen_name': 'view_screen', 'article_name': file_name})
+                return
+            else: # edit the existing article, loose the current state
+                self.state.show({'screen_name': 'edit_screen', 'article_name': file_name})
+                return
+        elif code==3: # article content blank
+            value = askquestion('Warning', message)
+            if value=='yes': # save article with blank content
+                data_manager.create_and_save(file_name, file_content)
+                self.state.show({'screen_name': 'view_screen', 'article_name': file_name})
+                return
+            else:
+                return
+        return True
+       
     def __save(self, event):
         file_name = self.title_value.get()
         file_content = self.text.get("1.0", "end-1c")
-        data_manager.create_and_save(file_name, file_content)
-        self.state.show({'screen_name':'view_screen', 'article_name':file_name})
+        is_ok = self.check_data_before_save(file_name, file_content, action='create')
+        if is_ok==True:
+            data_manager.create_and_save(file_name, file_content)
+            self.state.show({'screen_name': 'view_screen', 'article_name': file_name}) 
 
     def make_screen_elements(self, options=None):
 
@@ -133,6 +170,7 @@ class ViewScreen(Screen):
     def __delete(self, event):
         file_name = self.heading.replace('Read Article - ', '')
         data_manager.delete(file_name)
+        show_message('Successfully Deleted The Article', f'{file_name} is deleted successfully')
         self.state.show({'screen_name':'list_screen'})
 
     def get_article_content(self, article_name):
@@ -164,8 +202,6 @@ class ViewScreen(Screen):
             self.delete_button = Button(self.frame, text='Remove', padx=10, pady=5, font='comicsansms 10')
             self.delete_button.bind('<Button-1>', self.__delete)
 
-
-
             self.add_element(element=self.frame, pack_options={'fill':BOTH})
             self.add_element(element=self.heading_label, pack_options={})
             self.add_element(element=self.home_button, pack_options={'side':LEFT})
@@ -173,17 +209,10 @@ class ViewScreen(Screen):
             self.add_element(element=self.delete_button, pack_options={'side':LEFT})
             self.add_element(element=self.text, pack_options={'expand':True, 'fill':BOTH})
 
-
         except Exception as e:
-            # new_file_name = os.path.basename(self.file_path)
-            # self.state.showinfo('Error', str(e))
-            # # self.state.showinfo('Error', f"There is no article named '{new_file_name[:-3]}'")
-
-            # if new_file_name.endswith('.md'):
-            #     self.state.show_create(os.path.basename(self.file_path)[:-3])
-            # else:
-            #     self.state.show_create(os.path.basename(self.file_path))
-            print(f'ERROR!!! {e}')
+            show_message('Error', f"There is no article named '{options.get('article_name')}'")
+            self.state.show({'screen_name': 'create_screen', 'article_name':options.get('article_name')})
+            return -1
 
 class EditScreen(CreateScreen):
     def __init__(self, *args, **kwargs):
@@ -192,8 +221,10 @@ class EditScreen(CreateScreen):
     def __save(self, event):
         file_name = self.title_value.get()
         file_content = self.text.get("1.0", "end-1c")
-        data_manager.edit(file_name, file_content)
-        self.state.show({'screen_name':'view_screen', 'article_name':file_name})
+        is_ok = self.check_data_before_save(file_name, file_content, action='edit')
+        if is_ok==True:
+            data_manager.edit(file_name, file_content)
+            self.state.show({'screen_name':'view_screen', 'article_name':file_name})
 
     
     def get_article_content(self, article_name):

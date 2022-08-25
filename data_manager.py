@@ -30,4 +30,24 @@ def delete(file_name):
 def edit(file_name, file_content):
     delete(file_name)
     create_and_save(file_name, file_content)
-    
+
+def check_data(file_name, file_content, action='create'):
+    if file_name.strip()=='':
+        return {
+            'code': 1,
+            'message': 'Article Name cannot be blank',
+        }
+    all_articles = list(map(lambda x:x[:-3].lower(), get_articles_list()))
+    if action=='create' and file_name.lower() in all_articles:
+        return {
+            'code': 2,
+            'message': 'An article with the same name already exists. Do you still want to overwrite the existing article(yes) or edit the existing article?(no)',
+        }
+    if file_content.strip()=='':
+        return {
+            'code': 3,
+            'message': 'The article content is blank. Do you still want to save it?',
+        }
+    return {
+        'code': 4
+    }
