@@ -12,6 +12,10 @@ class Renderer():
         self.content = content
         self.app_state = state
         self.hyperlink = HyperlinkManager(self.textarea)  
+        self.sanitized_content = ''
+        self.sanitized_blocks = []
+        self.lines = []
+        
 
 
     def create_tag(self, attrs):
@@ -32,11 +36,11 @@ class Renderer():
         self.textarea.tag_configure(tag, font=my_font)
         return tag
 
-    def content_2_block(self, content):
-        blocks = content.split('\n\n')
+    def content_2_blocks(self):
+        blocks = self.content.split('\n\n')
         return blocks 
 
-    def block_2_lines(self, block):
+    def block_2_sanitized_block(self, block):
         lines = block.split('\n')
         to_delete = False 
         for line_num, line in enumerate(lines):
@@ -61,33 +65,37 @@ class Renderer():
 
         lines = list(filter(lambda x: x!='THIS_LINE_TO_BE_DELETED', lines))
 
+        return '\n'.join(lines) 
 
-        return lines 
+    def sanitized_blocks_2_sanitized_content(self):
+        self.content = '\n\n'.join(self.sanitized_blocks)
+
+    def content_2_lines(self):
+        self.lines = self.content.split('\n') 
 
     def line_2_parsed_chars(self, line):
         return parse(line)
 
-    def render_content(self,content):
-        blocks = self.content_2_block(content)
+    def render_content(self):
+        blocks = self.content_2_blocks()
         for block in blocks:
-            self.render_block(block)
-
-    def render_block(self, block):
-        lines = self.block_2_lines(block)
+            self.sanitized_blocks.append(self.block_2_sanitized_block(block))
+        self.sanitized_blocks_2_sanitized_content()
+        self.content_2_lines()
         temp_list = []
-        for line in lines:
+        for line in self.lines:
             temp_list.append(line)
             temp_list.append('\n')
-        lines = temp_list[:-1]
+        self.lines = temp_list[:-1]
 
-        for line in lines:
+        for line in self.lines:
             self.render_line(line)
 
     def render_line(self, line):
         if line=='\n':
             self.textarea.insert(END, '\n')
         else:
-            line = self.line_2_parsed_chars(line)
+            line = self.line_2_parsed_chars(line+' ')[:-1]
             if len(line)>0 and line[0].get('bulleted_list'):
                 self.textarea.insert(END, '    ' + u'\u2022' + ' ')
             for char in line:
@@ -106,5 +114,5 @@ class Renderer():
                 self.textarea.tag_add(self.create_tag(char_attrs), 'end -2 chars', 'end -1 chars') 
 
     def render(self):
-        self.render_content(self.content)
+        self.render_content()
                               

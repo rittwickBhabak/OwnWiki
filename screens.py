@@ -3,11 +3,11 @@ from functools import partial
 from abc import ABC, abstractmethod
 
 from tkinter import *
-from urllib import response
 
 import data_manager
 from renderer import Renderer
 from messages import show_message, askquestion
+
 
 class Screen(ABC):
 
@@ -241,6 +241,7 @@ class EditScreen(CreateScreen):
         self.text.insert(END, self.get_article_content(options['article_name']))
 
 
+
 class CreateViewScreen(CreateScreen, ViewScreen):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -322,7 +323,7 @@ class EditViewScreen(EditScreen, ViewScreen):
         self.view_text.config(state='disabled')
         self.view_text.config(state='disabled')
 
-        self.set_title('Create New Article')
+        self.set_title(f'Edit Article - {options["article_name"]}')
         self.title_label = Label(self.frame, text='Enter Title: ', font='comicsansms 22 bold', bg='white')
         self.title_value = StringVar()
         if options is not None:
@@ -331,6 +332,8 @@ class EditViewScreen(EditScreen, ViewScreen):
                 self.title_value.set(options['article_name'])
 
         self.title_entry = Entry(self.frame, textvariable=self.title_value, font='comicsansms 20', borderwidth=2, relief=GROOVE)
+        self.title_entry.config(state='disabled')
+
 
         self.home_button = Button(self.frame, text='Home', padx=10, pady=5, font='comicsansms 10')
         self.home_button.bind('<Button-1>', partial(self.state.show, {'screen_name': 'list_screen'}))
@@ -352,3 +355,5 @@ class EditViewScreen(EditScreen, ViewScreen):
         self.add_element(element=self.view_frame, pack_options={'fill':Y, 'side':RIGHT, 'anchor':'ne'})
         self.add_element(element=self.edit_text, pack_options={'fill':BOTH, 'expand':True})
         self.add_element(element=self.view_text, pack_options={'fill':BOTH, 'expand':True})
+
+
