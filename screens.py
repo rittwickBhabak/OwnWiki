@@ -54,7 +54,10 @@ class Screen(ABC):
     def hide(self, *args, **kwargs):
         self.set_active(False)
         for element in self.screen_elements:
-            element['element'].pack_forget()
+            try:
+                element['element'].pack_forget()
+            except:
+                pass 
             element['element'].destroy()
         self.screen_elements = []
 
@@ -62,6 +65,9 @@ class ListScreen(Screen):
 
     def __init__(self, root, state, title, heading, is_active=False):
         super().__init__(root=root, state=state, title=title, heading=heading, is_active=is_active)
+
+    def _on_mousewheel(self, event):
+        self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")
 
     def set_file_paths(self):
         self.current_md_files = data_manager.get_articles_list()
@@ -72,7 +78,7 @@ class ListScreen(Screen):
         self.yscrollbar = Scrollbar(self.wrapper, orient='vertical', command=self.canvas.yview)
         self.canvas.configure(yscrollcommand=self.yscrollbar.set)
         self.canvas.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox('all')))
-
+        self.canvas.bind("<MouseWheel>", self._on_mousewheel)
 
 
         self.heading_label = Label(self.root, text=self.heading, font='comicsansms 22 bold')
