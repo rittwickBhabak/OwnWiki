@@ -7,7 +7,8 @@ if __name__=='__main__':
     BASE_DIR = os.getcwd()
 
     root = Tk()
-    root.geometry('1500x700')
+    root.geometry('1500x600')
+    root.minsize(1500, 600)
     # root.resizable(False, False)
 
     state = State(base_dir=BASE_DIR)

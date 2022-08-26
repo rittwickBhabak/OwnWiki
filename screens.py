@@ -66,16 +66,29 @@ class ListScreen(Screen):
     def set_file_paths(self):
         self.current_md_files = data_manager.get_articles_list()
 
-    def make_screen_elements(self, options=None):      
+    def make_screen_elements(self, options=None):    
+        self.wrapper = LabelFrame(self.root)
+        self.canvas = Canvas(self.wrapper)
+        self.yscrollbar = Scrollbar(self.wrapper, orient='vertical', command=self.canvas.yview)
+        self.canvas.configure(yscrollcommand=self.yscrollbar.set)
+        self.canvas.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox('all')))
+
+
+
         self.heading_label = Label(self.root, text=self.heading, font='comicsansms 22 bold')
         self.add_element(element=self.heading_label, pack_options={'side': TOP, 'pady': 10})
 
-        self.frame = Frame(self.root, padx=70, pady=20)
-        self.add_element(element=self.frame, pack_options={'side':LEFT, 'anchor':'nw', 'fill':Y, 'ipadx':20, 'ipady':20})
+        self.frame = Frame(self.canvas, padx=70, pady=20)
+        self.canvas.create_window((0,0), window=self.frame, anchor='nw')
+
+        self.add_element(element=self.canvas, pack_options={'side':LEFT, 'fill':BOTH, 'expand':True})
+        self.add_element(element=self.yscrollbar, pack_options={'fill':Y, 'side':RIGHT})
+
+        # self.add_element(element=self.frame, pack_options={'side':LEFT, 'anchor':'nw', 'fill':Y, 'ipadx':20, 'ipady':20})
 
         self.view_links = []
         self.set_file_paths()
-        dir_path = os.path.join(self.state.base_dir, 'data', 'mds')
+
         for index, md_file in enumerate(self.current_md_files):
             label = Label(self.frame, text=f'{index+1}. {md_file[:-3].title()}', font='comicsansms 18')
             self.view_links.append(label)
@@ -86,6 +99,7 @@ class ListScreen(Screen):
         self.create_link.bind('<Button-1>', partial(self.state.show, {'screen_name': 'create_screen'}))
 
         self.add_element(element=self.create_link, pack_options={'anchor':'w'})
+        self.add_element(element=self.wrapper, pack_options={'fill':BOTH, 'ipadx':20, 'ipady':20, 'expand':True})
 
 class CreateScreen(Screen):
 
