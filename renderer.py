@@ -16,8 +16,6 @@ class Renderer():
         self.sanitized_blocks = []
         self.lines = []
         
-
-
     def create_tag(self, attrs):
         my_font = font.Font(self.textarea, self.textarea.cget('font'))
         attrs.sort()
