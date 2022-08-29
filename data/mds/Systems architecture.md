@@ -1,0 +1,58 @@
+From Wikipedia, the free encyclopedia
+
+A **system architecture** is the conceptual model that defines the structure, behavior, and more views of a system.[1] An architecture description is a formal description and representation of a system, organized in a way that supports reasoning about the structures and behaviors of the system.
+
+A system architecture can consist of system components and the sub-systems developed, that will work together to implement the overall system. There have been efforts to formalize languages to describe system architecture, collectively these are called architecture description languages (ADLs).
+
+## Overview
+Various organizations can define systems architecture in different ways, including:
+
+* The fundamental organization of a system, embodied in its components, their relationships to each other and to the environment, and the principles governing its design and evolution.[4]
+* A representation of a system, including a mapping of functionality onto hardware and software components, a mapping of the software architecture onto the hardware architecture, and human interaction with these components.[5]
+* An allocated arrangement of physical elements which provides the design solution for a consumer product or life-cycle process intended to satisfy the requirements of the functional architecture and the requirements baseline.[6]
+* An architecture consists of the most important, pervasive, top-level, strategic inventions, decisions, and their associated rationales about the overall structure (i.e., essential elements and their relationships) and associated characteristics and behavior.[7]
+* A description of the design and contents of a computer system. If documented, it may include information such as a detailed inventory of current hardware, software and networking capabilities; a description of long-range plans and priorities for future purchases, and a plan for upgrading and/or replacing dated equipment and software.[8]
+* A formal description of a system, or a detailed plan of the system at component level to guide its implementation.[9]
+* The composite of the design architectures for products and their life-cycle processes.[10]
+* The structure of components, their interrelationships, and the principles and guidelines governing their design and evolution over time.[11]
+One can think of system architecture as a set of representations of an existing (or future) system. These representations initially describe a general, high-level functional organization, and are progressively refined to more detailed and concrete descriptions.
+
+System architecture conveys the informational content of the elements consisting of a system, the relationships among those elements, and the rules governing those relationships. The architectural components and set of relationships between these components that an architecture description may consist of hardware, software, documentation, facilities, manual procedures, or roles played by organizations or people.[clarification needed]
+
+A system architecture primarily concentrates on the internal interfaces among the system's components or subsystems, and on the interface(s) between the system and its external environment, especially the user. (In the specific case of computer systems, this latter, special, interface is known as the computer human interface, AKA human computer interface, or HCI; formerly called the man-machine interface.)
+
+One can contrast a system architecture with system architecture engineering (SAE) - the method and discipline for effectively implementing the architecture of a system:[12]
+
+* SAE is a method because a sequence of steps is prescribed[by whom?] to produce or to change the architecture of a system within a set of constraints.
+* SAE is a discipline because a body of knowledge is used to inform practitioners as to the most effective way to design the system within a set of constraints.
+
+## History
+Systems architecture depends heavily on practices and techniques which were developed over thousands of years in many other fields, perhaps the most important being civil architecture.
+
+* Prior to the advent of digital computers, the electronics and other engineering disciplines used the term "system" as it is still commonly used today. However, with the arrival of digital computers and the development of software engineering as a separate discipline, it was often necessary to distinguish among engineered hardware artifacts, software artifacts, and the combined artifacts. A programmable hardware artifact, or computing machine, that lacks its computer program is impotent; even as a software artifact, or program, is equally impotent unless it can be used to alter the sequential states of a suitable (hardware) machine. However, a hardware machine and its programming can be designed to perform an almost illimitable number of abstract and physical tasks. Within the computer and software engineering disciplines (and, often, other engineering disciplines, such as communications), then, the term system came to be defined as containing all of the elements necessary (which generally includes both hardware and software) to perform a useful function.
+* Consequently, within these engineering disciplines, a system generally refers to a programmable hardware machine and its included program. And a systems engineer is defined as one concerned with the complete device, both hardware and software and, more particularly, all of the interfaces of the device, including that between hardware and software, and especially between the complete device and its user (the CHI). The hardware engineer deals (more or less) exclusively with the hardware device; the software engineer deals (more or less) exclusively with the computer program; and the systems engineer is responsible for seeing that the program is capable of properly running within the hardware device, and that the system composed of the two entities is capable of properly interacting with its external environment, especially the user, and performing its intended function.
+* A systems architecture makes use of elements of both software and hardware and is used to enable design of such a composite system. A good architecture may be viewed as a 'partitioning scheme,' or algorithm, which partitions all of the system's present and foreseeable requirements into a workable set of cleanly bounded subsystems with nothing left over. That is, it is a partitioning scheme which is exclusive, inclusive, and exhaustive. A major purpose of the partitioning is to arrange the elements in the sub systems so that there is a minimum of interdependencies needed among them. In both software and hardware, a good sub system tends to be seen to be a meaningful "object". Moreover, a good architecture provides for an easy mapping to the user's requirements and the validation tests of the user's requirements. Ideally, a mapping also exists from every least element to every requirement and test.
+
+## Types
+Several types of systems architectures (underlain by the same fundamental principles[13]) have been identified as follows:[14]
+* Hardware architecture
+* Software architecture
+* Enterprise architecture
+* Collaborative systems architectures(such as the Internet, intelligent transportation systems, and joint air defense systems)
+* Manufacturing systems architectures
+* Strategic systems architecture[15]
+
+## See also
+* Arcadia (engineering)
+* Architectural pattern (computer science)
+* Department of Defense Architecture Framework
+* Enterprise architecture framework
+* Enterprise information security architecture
+* Process architecture
+* Requirements analysis
+* Software architecture
+* Software engineering
+* Systems architect
+* Systems analysis
+* Systems design
+* Systems engineering
