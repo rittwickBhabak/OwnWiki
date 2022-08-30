@@ -1,3 +1,10 @@
+'''This module contains classes for all Screens.
+
+To make s new screen, the 'Screen' class must be implemented. For more details \
+    see Screen Class
+
+'''
+
 import os
 from functools import partial
 from abc import ABC, abstractmethod
@@ -10,8 +17,40 @@ from messages import show_message, askquestion
 
 
 class Screen(ABC):
+    '''This is a abstract class. Every Screen has to implement this class.
+
+    This class sets the basic element of a screen namely root, title, heading
+
+    Attributes:
+        root: A Tk object to which the screen will be attached.
+        heading: A string specifying the main heading of the screen. Default \
+            value is ""
+        title: A string specifying the screen title. Default value is ""
+        state: After creating the screen the screen has to be registered to the\
+            state object. Event passing will be happened through this state\
+            object.
+        is_active: Is the screen currently visible. Default value is False
+
+        screen_elements: A list of Tk widgets which is placed in the screen.
+    
+    Methods:
+        set_root: sets the root
+        set_title: sets the title
+        set_state: sets the states
+        set_heading: sets the heading
+        set_active: sets the active status of the screen
+        add_element: adds element to screen_elements list
+        show: shows the screen
+        make_screen_elements: make the tk widgets for screen and packs them
+        hide: hides a screen
+    '''
 
     def __init__(self, root, state, title="", heading="", is_active=False):
+        '''Inits Screen with arguments root, state title, heading and is_active.
+
+        Initializes the screen_element list to an empty list.
+        '''
+
         self.set_root(root)
         self.set_heading(heading)
         self.set_title(title) 
@@ -21,26 +60,86 @@ class Screen(ABC):
         self.screen_elements = [] # items: {'element': ptr_2_element, 'pack_options': dictionary}
 
     def set_root(self, root):
+        '''Setter for root.
+        Arguments:
+            root: A Tk object
+        Returns:
+            None
+        '''
+
         self.root = root 
     
     def set_title(self, title):
+        '''Setter for title.
+        Arguments:
+            title: A string for screen title
+        Returns:
+            None
+        '''
+
         self.root.title(title)
     
     def set_state(self, state):
+        '''Setter for state.
+        Arguments:
+            state: An object of type State
+        Returns:
+            None
+        '''
+
         self.state = state 
     
     def set_heading(self, heading):
+        '''Setter for heading.
+        Arguments:
+            heading: a string for setting the screen heading.
+        Returns:
+            None
+        '''
+
         self.heading = heading 
 
     def set_active(self, is_active):
+        '''Setter for is_active.
+        Arguments:
+            is_active: a bool value indicating if the screen will be visible or\
+                not.
+        Returns:
+            None
+        '''
+
         self.is_active = is_active
 
     def add_element(self, element, pack_options):
+        '''Adds Tk widgets to the screen.
+        
+        Arguments:
+            element: A dictionary of type {'element': Tk object } 
+            pack_options: A dictionary with key value pairs which is passed to \
+                 the .pack() method }
+        Returns:
+            None
+        '''
+        
         element = {'element': element,
                     'pack_options': pack_options}
         self.screen_elements.append(element)
 
     def show(self, options=None):
+        '''Show the screen.
+        
+        First makes the screen active. Then creates the screen elements from \
+            scratch and the pack the screen elements to the screen.
+
+        Arguments:
+            options: A dictionary containing useful information to create the \
+                screen elements for example view_screen and edit_screen needs\
+                the filename to show the file, then it contains 'file_name':\
+                <name_of_the_file> etc.
+        Returns:
+            None
+        '''
+
         self.set_active(True)
         value = self.make_screen_elements(options)
         if value is None or value==1:
@@ -49,9 +148,29 @@ class Screen(ABC):
 
     @abstractmethod
     def make_screen_elements(self, options=None):
+        '''Every time it re renders the element for the screen.
+        
+        Then creates the screen elements from scratch and the pack the screen \
+            elements to the screen.
+        Arguments:
+            options: A dictionary containing useful information to create the \
+                screen elements for example view_screen and edit_screen needs\
+                the filename to show the file, then it contains 'file_name':\
+                <name_of_the_file> etc.
+        Returns:
+            None
+        
+        '''
         pass 
 
-    def hide(self, *args, **kwargs):
+    def hide(self):
+        '''This hides the screen.
+        
+        First it sets the screen to in-active. Then unpack the elements from \
+            the screen then destroys the elements and then sets screen elements\
+            list to empty list.       
+        '''
+
         self.set_active(False)
         for element in self.screen_elements:
             try:
@@ -62,6 +181,14 @@ class Screen(ABC):
         self.screen_elements = []
 
 class ListScreen(Screen):
+    '''This screen lists out all of the available articles.
+    
+    For more details see base class 
+
+    Methods:
+        set_file_paths: This method, when called, scans over the database\
+            and returns all of the articles available
+    '''
 
     def __init__(self, root, state, title, heading, is_active=False):
         super().__init__(root=root, state=state, title=title, heading=heading, is_active=is_active)
@@ -70,9 +197,13 @@ class ListScreen(Screen):
         self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")
 
     def set_file_paths(self):
+        '''Scans over the database and returns all of the articles available.'''
+
         self.current_md_files = data_manager.get_articles_list()
 
-    def make_screen_elements(self, options=None):    
+    def make_screen_elements(self, options=None):
+        '''See Base Class Method'''
+
         self.wrapper = LabelFrame(self.root)
         self.canvas = Canvas(self.wrapper)
         self.yscrollbar = Scrollbar(self.wrapper, orient='vertical', command=self.canvas.yview)
@@ -108,11 +239,37 @@ class ListScreen(Screen):
         self.add_element(element=self.wrapper, pack_options={'fill':BOTH, 'ipadx':20, 'ipady':20, 'expand':True})
 
 class CreateScreen(Screen):
+    '''This screen opens a editor to the user for creating new article.
+    
+    Methods:
+        check_data_before_save: Checks that if the title of the article is \
+            blank or if there already exists an article with the same name or \
+            if the content of the article is blank and takes action.
+        save: saves the article to database
+    '''
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def check_data_before_save(self, file_name, file_content, action):
+        '''Checks the article before saving.
+
+        Checks that if the title of the article is \
+        blank or if there already exists an article with the same name or \
+        if the content of the article is blank and takes action.
+
+        Arguments:
+            file_name: a string indicating the article_name
+            file_content: a string containing the article_content
+            action: a string with value either 'create' or 'edit', if it is \
+                'edit' then 'a file already exists check' is skipped.
+        
+        Returns:
+            None if the file can not be created or True if the file creation \
+                can be proceeded.
+
+        '''
+
         response = data_manager.check_data(file_name, file_content, action)
         code = response['code']
         message = response.get('message')
@@ -143,6 +300,8 @@ class CreateScreen(Screen):
         return True
        
     def save(self, event):
+        '''Saves the article to database.'''
+
         file_name = self.title_value.get()
         file_content = self.text.get("1.0", "end-1c")
         is_ok = self.check_data_before_save(file_name, file_content, action='create')
@@ -151,6 +310,7 @@ class CreateScreen(Screen):
             self.state.show({'screen_name': 'view_screen', 'article_name': file_name}) 
 
     def make_screen_elements(self, options=None):
+        '''See Base Class.'''
 
         self.set_title('Create New Article')
 
@@ -183,6 +343,13 @@ class CreateScreen(Screen):
         self.add_element(element=self.text, pack_options={'expand':True, 'fill':BOTH})
 
 class ViewScreen(Screen):
+    '''This screen picks up the article from database and shows it to user.
+    
+    For more details see base class.
+
+    Methods:
+        get_article_content: picks up the article from the database
+    '''
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -194,11 +361,21 @@ class ViewScreen(Screen):
         self.state.show({'screen_name':'list_screen'})
 
     def get_article_content(self, article_name):
+        '''Picks up the article from database.
+        
+        Arguments:
+            article_name: a string indicating the article name
+
+        Returns: 
+            None    
+        '''
         file_src = os.path.join(self.state.base_dir, 'data', 'mds', article_name+'.md')
         with open(file_src, 'r') as f:
             return f.read()
     
     def make_screen_elements(self, options=None):
+        '''See Base Class.'''
+
         self.set_heading(f'Read Article - {options.get("article_name")}')
         self.set_title(f'Read Article - {options.get("article_name")}')
 
@@ -235,10 +412,23 @@ class ViewScreen(Screen):
             return -1
 
 class EditScreen(CreateScreen):
+    '''This screen opens a editor to the user for creating new article.
+    
+    This screen is inherited from CreateScreen
+
+    Methods:
+        check_data_before_save: Checks that if the title of the article is \
+            blank or if there already exists an article with the same name or \
+            if the content of the article is blank and takes action.
+        save: saves the article to database
+    '''
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def save(self, event):
+        '''Saves the article to database.'''
+
         file_name = self.title_value.get()
         file_content = self.text.get("1.0", "end-1c")
         is_ok = self.check_data_before_save(file_name, file_content, action='edit')
@@ -248,11 +438,15 @@ class EditScreen(CreateScreen):
 
     
     def get_article_content(self, article_name):
+        '''See base class.'''
+        
         file_src = os.path.join(self.state.base_dir, 'data', 'mds', article_name+'.md')
         with open(file_src, 'r') as f:
             return f.read()
 
     def make_screen_elements(self, options=None):
+        '''See base class.'''
+
         super().make_screen_elements(options=options)
         self.set_heading(f'Edit Article - {options.get("article_name")}')
         self.set_title(f'Edit Article - {options.get("article_name")}')
@@ -263,16 +457,34 @@ class EditScreen(CreateScreen):
 
 
 class CreateViewScreen(CreateScreen, ViewScreen):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    '''This screen creates two pane for users to create article and preview.
     
+    This class is inherited from CreateScreen and ViewScreen. For more details\
+        view these two classes.
+
+    Methods:
+        change_event_handler: this method is called whenever there is any \
+            change in the editor
+    '''
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)       
+
     def change_event_handler(self, event=None):
+        '''this method is called whenever there is any change in the editor.
+        
+        Every time this method is called, the preview pane is rerendered with\
+            the newly parsed content. This happens synchronously.
+
+        '''
         self.view_text.config(state='normal')
         self.view_text.delete("1.0", "end")
         Renderer(self.view_text, self.edit_text.get("1.0", "end-1c"), self.state).render()
         self.view_text.config(state='disabled')
     
     def make_screen_elements(self, options=None):
+        '''See Base Class.'''
+
         self.frame = Frame(self.root, padx=50, pady=10, borderwidth=1, relief=GROOVE)
         self.panes = Frame(self.root, padx=50, pady=10, borderwidth=1, relief=GROOVE)
 
@@ -317,16 +529,32 @@ class CreateViewScreen(CreateScreen, ViewScreen):
         self.add_element(element=self.view_text, pack_options={'fill':BOTH, 'expand':True})
 
 class EditViewScreen(EditScreen, ViewScreen):
+    '''This screen creates two pane for users to edit article and preview.
+    
+    This class is inherited from EditScreen and ViewScreen. For more details\
+        view these two classes.
+
+    Methods:
+        change_event_handler: this method is called whenever there is any \
+            change in the editor
+    '''
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-    
+
+
     def change_event_handler(self, event=None):
+        '''See Base Class.'''
+
         self.view_text.config(state='normal')
         self.view_text.delete("1.0", "end")
         Renderer(self.view_text, self.edit_text.get("1.0", "end-1c"), self.state).render()
         self.view_text.config(state='disabled')
+
     
     def make_screen_elements(self, options=None):
+        '''See Base Class.'''
+
         self.frame = Frame(self.root, padx=50, pady=10, borderwidth=1, relief=GROOVE)
         self.panes = Frame(self.root, padx=50, pady=10, borderwidth=1, relief=GROOVE)
 

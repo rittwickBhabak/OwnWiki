@@ -1,4 +1,4 @@
-From Wikipedia, the free encyclopedia 2
+From Wikipedia, the free encyclopedia
 
 A **system architecture** is the conceptual model that defines the structure, behavior, and more views of a system.[1] An architecture description is a formal description and representation of a system, organized in a way that supports reasoning about the structures and behaviors of the system.
 
