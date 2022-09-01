@@ -1,3 +1,28 @@
+'''This module has all the parsers to parse the content of the markdown article.
+
+This module consist of a function which takes a markdown string as input and \
+    returns the parsed list of characters. To use the parser user has only to \
+    invoke parser method of this module. 
+    for example if the input is
+    input: A **bold** and *italic* text.
+    output: [
+        {'char': 'A'}, 
+        {'char': ' '},  
+        {'char': 'b', 'bold':True}, {'char': 'o', 'bold':True}, {'char': 'l', 'bold':True}, {'char': 'd', 'bold':True},  
+        {'char': ' '},  
+        {'char': 'a'}, {'char': 'n'}, {'char': 'd'},  
+        {'char': ' '},  
+        {'char': 'i', 'italic:True}, {'char': 't', 'italic:True}, {'char': 'a', 'italic:True}, {'char': 'l', 'italic:True}, {'char': 'i', 'italic:True}, {'char': 'c', 'italic:True},  
+        {'char': ' '},  
+        {'char': 'a'}, {'char': 'n'}, {'char': 'd'},  
+        {'char': ' '},  
+        {'char': 't'}, {'char': 'e'}, {'char': 'x'}, {'char': 't'}, {'char': '.'},
+    ]
+Every new parser has to be added to the InlineParser class's list_of_parsers
+
+
+'''
+
 from abc import ABC, abstractmethod
 import re 
 
@@ -21,6 +46,7 @@ class StringParser(ABC):
         parse: invokes find_matches and invokes modify
 
     '''
+    
     def __init__(self, chars, pattern):
         self.chars = []
         for char in chars:
@@ -101,7 +127,7 @@ class Parser4Bold(StringParser):
             markdown part and keeps only the formatted chars.
     '''
     
-    def __init__(self, string, pattern=r'\*\*[^\s].*?[^\s]\*\*[^\*]'):
+    def __init__(self, string, pattern=r'(\*\*[^\s]\*\*[^\*]|\*\*[^\s].*?[^\s]\*\*[^\*])'):
         super().__init__(string, pattern)
         self.parse()
         
@@ -140,7 +166,7 @@ class Parser4Italic(StringParser):
             markdown part and keeps only the formatted chars.
     '''
     
-    def __init__(self, chars, pattern=r'\*[^\s].*?[^\s]\*[^\*]'):
+    def __init__(self, chars, pattern=r'(\*[^\s]\*[^\*]|\*[^\s].*?[^\s]\*[^\*])'):
         super().__init__(chars, pattern)
         self.parse()
         
@@ -177,7 +203,7 @@ class Parser4Underline(StringParser):
             markdown part and keeps only the formatted chars.
     '''
     
-    def __init__(self, chars, pattern=r'_[^\s].*?[^\s]_[^_]'):
+    def __init__(self, chars, pattern=r'(_[^\s]_[^_]|_[^\s].*?[^\s]_[^_])'):
         super().__init__(chars, pattern)
         self.parse()
         
@@ -215,7 +241,7 @@ class Parser4InlineCode(StringParser):
             markdown part and keeps only the formatted chars.
     '''
     
-    def __init__(self, chars, pattern=r'`[^\s].*?[^\s]`[^`]'):
+    def __init__(self, chars, pattern=r'`([^\s]`[^`]|[^\s].*?[^\s]`[^`])'):
         super().__init__(chars, pattern)
         self.parse()
         

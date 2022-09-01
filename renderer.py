@@ -1,3 +1,11 @@
+'''This module renders the raw string to the textarea.
+
+The Renderer class takes raw content of the markdown file. Then removes the \
+    unnecessary line breaks by creates a sanitized content in which per\
+    line can be parsed independently. 
+
+'''
+
 from tkinter import * 
 from tkinter import Text
 from tkinter import font 
@@ -7,6 +15,40 @@ from hyperlink_manager import HyperlinkManager
 from parsers import parse 
 
 class Renderer():
+    '''The Renderer class takes raw content of the markdown file. 
+    
+    Then removes the unnecessary line breaks by creates a sanitized content\
+    in which per line can be parsed independently. 
+    
+    Attributes:
+        textarea: A Text widget where text is inserted after parsing.
+
+        content: A string to be parsed.
+
+        state: A state object to which screens are attached.
+    
+    Methods:
+        create_tag: Creates tags for proper styling.
+        
+        content_2_blocks: Divides raw content to blocks to texts.
+        
+        block_2_sanitized_block: Remove unnecessary line breaks b/w the lines.
+        
+        sanitized_blocks_2_sanitized_content: Joins the sanitized blocks to make\
+            sanitized contents.
+
+        content_2_lines: Divides the sanitized content to lines.
+
+        line_2_parsed_chars: Parsed the line to parsed list of chars.
+
+        render_content: Adds the parsed list of chars to the textarea.
+
+        render_line: Adds the parsed line to the textarea.
+
+        render: Renders the complete content.
+
+    '''
+
     def __init__(self, textarea, content, state):
         self.textarea = textarea
         self.content = content
@@ -17,6 +59,16 @@ class Renderer():
         self.lines = []
         
     def create_tag(self, attrs):
+        '''Creates tags for proper styling.
+        
+        Arguments:
+            attrs: list of strings specifying the styles for a character
+
+        Returns:
+            None
+
+        '''
+
         my_font = font.Font(self.textarea, self.textarea.cget('font'))
         attrs.sort()
         for attr in attrs:
@@ -35,10 +87,30 @@ class Renderer():
         return tag
 
     def content_2_blocks(self):
+        '''Divides raw content to blocks to texts.
+        
+        Arguments:
+            None
+
+        Returns:
+            None
+
+        '''
+
         blocks = self.content.split('\n\n')
         return blocks 
 
     def block_2_sanitized_block(self, block):
+        '''Remove unnecessary line breaks b/w the lines.
+        
+        Arguments:
+            block: A string having unnecessary line breaks.
+
+        Returns:
+            None
+
+        '''
+
         lines = block.split('\n')
         to_delete = False 
         for line_num, line in enumerate(lines):
@@ -66,15 +138,55 @@ class Renderer():
         return '\n'.join(lines) 
 
     def sanitized_blocks_2_sanitized_content(self):
+        '''Joins the sanitized blocks to make\
+            
+            Arguments:
+                None
+
+            Returns:
+                None
+
+            '''
+
         self.content = '\n\n'.join(self.sanitized_blocks)
 
     def content_2_lines(self):
+        '''Divides the sanitized content to lines.
+        
+        Arguments:
+            None
+
+        Returns:
+            None
+
+        '''
+
         self.lines = self.content.split('\n') 
 
     def line_2_parsed_chars(self, line):
+        '''Parsed the line to parsed list of chars.
+        
+        Arguments:
+            line: An raw string
+
+        Returns:
+            The list of parsed characters.
+
+        '''
+
         return parse(line)
 
     def render_content(self):
+        '''Adds the parsed list of chars to the textarea.
+        
+        Arguments:
+            None
+
+        Returns:
+            None
+
+        '''
+
         blocks = self.content_2_blocks()
         for block in blocks:
             self.sanitized_blocks.append(self.block_2_sanitized_block(block))
@@ -90,6 +202,16 @@ class Renderer():
             self.render_line(line)
 
     def render_line(self, line):
+        '''Adds the parsed line to the textarea.
+        
+        Arguments:
+            line (str): An unparsed string which is to be rendered to screen.
+
+        Returns:
+            None
+
+        '''
+
         if line=='\n':
             self.textarea.insert(END, '\n')
         else:
@@ -112,5 +234,15 @@ class Renderer():
                 self.textarea.tag_add(self.create_tag(char_attrs), 'end -2 chars', 'end -1 chars') 
 
     def render(self):
+        '''Renders the complete content.
+        
+        Arguments:
+            content (str): An unparsed long string which is to be rendered to screen.
+
+        Returns:
+            None
+
+        '''
+
         self.render_content()
                               

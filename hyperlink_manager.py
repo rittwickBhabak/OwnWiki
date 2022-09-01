@@ -1,7 +1,14 @@
 from tkinter import CURRENT
 
 class HyperlinkManager:
+    '''This Class is used for making links in text area.
+    
+    For more details visit the following link. This class is taken from the \
+        following link
     # https://stackoverflow.com/questions/50327234/adding-link-to-text-in-text-widget-in-tkinter
+
+    '''
+    
     def __init__(self, text):
         self.text = text
         self.text.tag_config("hyper", foreground="blue", underline=1)

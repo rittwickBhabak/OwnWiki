@@ -3,7 +3,8 @@ from state import State
 from screens import CreateScreen, EditScreen, ListScreen, ViewScreen, CreateViewScreen, EditViewScreen
 from tkinter import * 
 
-if __name__=='__main__':
+def main():
+
     BASE_DIR = os.getcwd()
 
     root = Tk()
@@ -35,3 +36,6 @@ if __name__=='__main__':
     state.show({'screen_name':'list_screen'})
 
     root.mainloop()
+
+if __name__=='__main__':
+    main()
