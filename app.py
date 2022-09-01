@@ -1,10 +1,24 @@
+'''This is the starting point of the application.
+
+This module contains the main window of the application.
+
+'''
+
+
 import os
 from state import State
 from screens import CreateScreen, EditScreen, ListScreen, ViewScreen, CreateViewScreen, EditViewScreen
 from tkinter import * 
 
 def main():
-
+    '''Starting point of the application.
+    
+    In this function, all of the screens are created, the state object is \
+        created and the screens are attached to the state object. 
+    And on startup the list_screen is shown.
+    
+    '''
+    
     BASE_DIR = os.getcwd()
 
     root = Tk()
