@@ -10,7 +10,6 @@ from tkinter import *
 from tkinter import Text
 from tkinter import font 
 from functools import partial
-import os 
 from hyperlink_manager import HyperlinkManager
 from parsers import parse 
 
@@ -246,3 +245,4 @@ class Renderer():
 
         self.render_content()
                               
+
