@@ -1,5 +1,5 @@
-This is **a** _brand_ new a*r*ticle.
+This is a **bold** text.
 
-_R_ittwick _B_habak
+This is _underlined_. 
 
-This is a bol**d** like of tex**t**s of text.
+This is *italic*.
