@@ -27,10 +27,6 @@ def main():
     # root.resizable(False, False)
 
     state = State(base_dir=BASE_DIR)
-    list_screen = {
-        'screen': ListScreen(root, state, 'OwnWiki - Welcome', 'OwnWiki - All Articles', True),
-        'name': 'list_screen'
-    }
     create_screen = {
         'screen': CreateViewScreen(root, state, 'Create New Article', '', False),
         'name': 'create_screen'
@@ -43,10 +39,14 @@ def main():
         'screen': EditViewScreen(root, state, 'Edit Article', '', False),
         'name': 'edit_screen'
     }
-    state.add_screen(list_screen)
+    list_screen = {
+        'screen': ListScreen(root, state, 'OwnWiki - Welcome', 'OwnWiki - All Articles', True),
+        'name': 'list_screen'
+    }
     state.add_screen(create_screen)
     state.add_screen(view_screen)
     state.add_screen(edit_screen)
+    state.add_screen(list_screen)
     state.show({'screen_name':'list_screen'})
 
     root.mainloop()

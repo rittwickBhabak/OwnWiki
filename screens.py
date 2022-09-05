@@ -204,6 +204,7 @@ class ListScreen(Screen):
     def make_screen_elements(self, options=None):
         '''See Base Class Method'''
 
+        self.set_title(self.heading)
         self.wrapper = LabelFrame(self.root)
         self.canvas = Canvas(self.wrapper)
         self.yscrollbar = Scrollbar(self.wrapper, orient='vertical', command=self.canvas.yview)
